@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/hits-mbm-dev/kimmdy-grappa/compare/v0.1.2...v0.1.3) (2023-11-07)
+
+
+### Bug Fixes
+
+* make release use patch version number ([ad90027](https://github.com/hits-mbm-dev/kimmdy-grappa/commit/ad9002770977ad92aea9699d6dae78faa607da4b))
+
 ## [0.1.2](https://github.com/hits-mbm-dev/kimmdy-grappa/compare/v0.1.1...v0.1.2) (2023-11-07)
 
 
