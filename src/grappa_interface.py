@@ -113,6 +113,7 @@ def generate_input(top: Topology) -> dict:
         ]
         for atom in top.atoms.values()
     ]
+    atoms.sort(key=lambda x: x[2])
     bonds = [(int(bond.ai), int(bond.aj)) for bond in top.bonds.values()]
     radicals = [int(radical) for radical in top.radicals.keys()]
 
@@ -127,8 +128,10 @@ def apply_parameters(top: Topology, parameters: dict):
     ## atoms
     for i, idx in enumerate(parameters["atom"]["idxs"]):
         if not (atom := top.atoms.get(idx)):
-            #raise KeyError(f"bad index {idx} in {list(top.atoms.keys())}") 
-            logging.warning(f"Ignored parameters with invalid ids: {idx} for atoms")    # this can happen when removing a hydrogen in kimmdy-remove-hydrogen
+            # raise KeyError(f"bad index {idx} in {list(top.atoms.keys())}")
+            logging.warning(
+                f"Ignored parameters with invalid ids: {idx} for atoms"
+            )  # this can happen when removing a hydrogen in kimmdy-remove-hydrogen
             continue
         # can anything but charge change??
         atom.charge = parameters["atom"]["q"][i]
@@ -138,7 +141,7 @@ def apply_parameters(top: Topology, parameters: dict):
     for i, idx in enumerate(parameters["bond"]["idxs"]):
         tup = tuple(idx)
         if not top.bonds.get(tup):
-            #raise KeyError(f"bad index {tup} in {list(top.bonds.keys())}")
+            # raise KeyError(f"bad index {tup} in {list(top.bonds.keys())}")
             logging.warning(f"Ignored parameters with invalid ids: {tup} for bonds")
             continue
         top.bonds[tup] = Bond(
@@ -152,7 +155,7 @@ def apply_parameters(top: Topology, parameters: dict):
     for i, idx in enumerate(parameters["angle"]["idxs"]):
         tup = tuple(idx)
         if not top.angles.get(tup):
-            #raise KeyError(f"bad index {tup} in {list(top.angles.keys())}")
+            # raise KeyError(f"bad index {tup} in {list(top.angles.keys())}")
             logging.warning(f"Ignored parameters with invalid ids: {tup} for angles")
             continue
         top.angles[tup] = Angle(
@@ -166,7 +169,7 @@ def apply_parameters(top: Topology, parameters: dict):
     for i, idx in enumerate(parameters["proper"]["idxs"]):
         tup = tuple(idx)
         if not top.proper_dihedrals.get(tup):
-            #raise KeyError(f"bad index {tup} in {list(top.proper_dihedrals.keys())}")
+            # raise KeyError(f"bad index {tup} in {list(top.proper_dihedrals.keys())}")
             logging.warning(
                 f"Ignored parameters with invalid ids: {tup} for proper dihedrals"
             )
