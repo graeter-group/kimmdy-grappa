@@ -9,7 +9,7 @@ from kimmdy.topology.utils import get_by_permutations
 from kimmdy.plugins import Parameterizer
 from kimmdy.parsing import write_json
 
-import grappa.ff
+from grappa.data import Molecule
 import openmm.unit
 
 
@@ -100,24 +100,23 @@ def clean_parameters(parameters: dict) -> dict:
     return parameters_clean
 
 
-def generate_input(top: Topology) -> dict:
+def generate_input(top: Topology) -> Molecule:
     at_map = top.ff.atomtypes
-    atoms = [
-        [
-            int(atom.nr),
-            atom.atom,
-            atom.residue,
-            int(atom.resnr),
-            [float(at_map[atom.type].sigma), float(at_map[atom.type].epsilon)],
-            int(at_map[atom.type].at_num),
-        ]
-        for atom in top.atoms.values()
-    ]
-    atoms.sort(key=lambda x: x[2])
-    bonds = [(int(bond.ai), int(bond.aj)) for bond in top.bonds.values()]
-    radicals = [int(radical) for radical in top.radicals.keys()]
+    atom_info = {'nr':[],'atomic_number':[],'partial_charges':[],'sigma':[],'epsilon':[],'is_radical':[]}
+    for atom in top.atoms.values():
+        atom_info['nr'].append(int(atom.nr))
+        atom_info['atomic_number'].append(int(at_map[atom.type].at_num))
+        atom_info['partial_charges'].append(float(atom.charge))
+        atom_info['sigma'].append(float(at_map[atom.type].sigma))
+        atom_info['epsilon'].append(float(at_map[atom.type].epsilon))
+        atom_info['is_radical'].append(int(atom.is_radical))
 
-    return {"atoms": atoms, "bonds": bonds, "radicals": radicals}
+    bonds = [(int(bond.ai), int(bond.aj)) for bond in top.bonds.values()]
+    impropers = [(int(improper.ai), int(improper.aj),int(improper.ak),int(improper.al)) for improper in top.improper_dihedrals.values()]
+
+    mol = Molecule(atom_info["nr"],)
+
+    return mol
 
 
 def apply_parameters(top: Topology, parameters: dict):
