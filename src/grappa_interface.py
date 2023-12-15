@@ -10,6 +10,8 @@ from kimmdy.plugins import Parameterizer
 from kimmdy.parsing import write_json
 
 from grappa.data import Molecule
+from grappa.utils.loading_utils import load_model
+from grappa.grappa import Grappa
 import openmm.unit
 
 
@@ -100,7 +102,11 @@ def clean_parameters(parameters: dict) -> dict:
     return parameters_clean
 
 
-def generate_input(top: Topology) -> Molecule:
+def move_residual_charge_to_radical(partial_charges:list[float],radical_idx:int, total_charge:float):
+    partial_charges[radical_idx] += total_charge - sum(partial_charges)
+    return partial_charges
+
+def build_molecule(top: Topology) -> Molecule:
     at_map = top.ff.atomtypes
     atom_info = {'nr':[],'atomic_number':[],'partial_charges':[],'sigma':[],'epsilon':[],'is_radical':[]}
     for atom in top.atoms.values():
@@ -114,8 +120,7 @@ def generate_input(top: Topology) -> Molecule:
     bonds = [(int(bond.ai), int(bond.aj)) for bond in top.bonds.values()]
     impropers = [(int(improper.ai), int(improper.aj),int(improper.ak),int(improper.al)) for improper in top.improper_dihedrals.values()]
 
-    mol = Molecule(atom_info["nr"],)
-
+    mol = Molecule(atoms=atom_info["nr"],bonds=bonds,impropers=impropers,atomic_numbers=atom_info["atomic_number"],partial_charges=atom_info["partial_charges"],additional_features={k:np.asarray(v) for k,v in atom_info.items() if k not in ['nr','atomic_number','partial_charges']})
     return mol
 
 
@@ -215,16 +220,23 @@ class GrappaInterface(Parameterizer):
         self, current_topology: Topology, focus_nr: list[str] = []
     ) -> Topology:
         ## get atoms, bonds, radicals in required format
-        input_dict = generate_input(current_topology)
-        write_json(input_dict, "in.json")
+        mol = build_molecule(current_topology)
+        mol.to_json("in.json")
 
-        ff = grappa.ff.ForceField.from_tag("radical_latest")
-        ff.units["angle"] = openmm.unit.degree
-        # gromacs angle force constant are already in kJ/mol/rad-2]
-        parameters = ff.params_from_topology_dict(input_dict)
-        write_json(parameters, "out_raw.json")
-        parameters = clean_parameters(parameters)
-        write_json(parameters, "out_clean.json")
+        # load model, tag will be changed to be more permanent
+        model_tag =  'https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth'
+        model = load_model(model_tag)
 
-        apply_parameters(current_topology, parameters)
+        # initialize class that handles ML part
+        grappa = Grappa(model,device='cpu')
+        parameters = grappa.predict(mol)
+
+        parameters_dict = parameters.to_dict()
+        write_json(parameters_dict, "out_raw.json")
+        
+
+        # parameters = clean_parameters(parameters)
+
+
+        # apply_parameters(current_topology, parameters)
         return current_topology

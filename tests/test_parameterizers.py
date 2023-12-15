@@ -11,10 +11,15 @@ import json
 
 from grappa_interface import (
     clean_parameters,
-    generate_input,
+    build_molecule,
     apply_parameters,
     GrappaInterface,
 )
+
+from grappa.grappa import Grappa
+from grappa.data.Molecule import Molecule
+from grappa.utils.loading_utils import load_model
+
 from kimmdy.topology.topology import Topology
 from kimmdy.constants import AA3
 from kimmdy.parsing import write_json, read_json, read_top
@@ -23,7 +28,7 @@ from kimmdy.parsing import write_json, read_json, read_top
 ## fixtures ##
 @pytest.fixture
 def grappa_input():
-    return read_json(Path(__file__).parent / "GrAPPa_input_alanine.json")
+    return Molecule.from_json(Path(__file__).parent / "in_alanine.json")
 
 
 @pytest.fixture
@@ -34,14 +39,14 @@ def grappa_output():
 ## test scripts ##
 def test_generate_input():
     top = Topology(read_top(Path(__file__).parent / "Ala_out.top"))
-    input_dict = generate_input(top)
+    mol = build_molecule(top)
+    mol.to_json("in.json")
 
     # with open("GrAPPa_input_alanine.json", "w") as f:
     #     json.dump(input_dict, f)
-    assert len(input_dict["atoms"]) == 21
-    assert len(input_dict["bonds"]) == 20
-    assert input_dict["radicals"] == [9]
-    assert input_dict["atoms"][0] == [1, "CH3", "ACE", 1, [0.339967, 0.45773], 6]
+    assert len(mol.atoms) == 21
+    assert len(mol.bonds) == 20
+    assert mol.additional_features['is_radical'][9] == 1
 
     assert all([len(x) == 6 for x in input_dict["atoms"]])
     assert all([isinstance(x[s], str) for x in input_dict["atoms"] for s in [1, 2]])
@@ -59,11 +64,14 @@ def test_clean_parameters(grappa_output):
 
 
 def test_generate_parameters(grappa_input):
-    import grappa.ff
+    # load model, tag will be changed to be more permanent
+    model_tag =  'https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth'
+    model = load_model(model_tag)
 
-    ff = grappa.ff.ForceField.from_tag("radical_example")
-    # in rad to avoid import openmm
-    parameters = ff.params_from_topology_dict(grappa_input)
+    # initialize class that handles ML part
+    grappa = Grappa(model,device='cpu')
+    parameters = grappa.predict(grappa_input)
+    breakpoint()
     clean_parameters(parameters)
     # write_json(parameters, "GrAPPa_output_alanine.json")
     # with open("GrAPPa_output_alanine.json", "r") as f:
