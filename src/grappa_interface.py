@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+np.set_printoptions(suppress=True,precision=6) #prevent numpy exponential 
 import math
 from typing import Union
 
@@ -10,21 +11,24 @@ from kimmdy.plugins import Parameterizer
 from kimmdy.parsing import write_json
 
 from grappa.data import Molecule
+from grappa.data import Parameters
+
 from grappa.utils.loading_utils import load_model
 from grappa.grappa import Grappa
-import openmm.unit
 
+from openmm import unit as openmm_unit
+from grappa.units import convert
 
 logger = logging.getLogger("kimmdy.grappa_interface")
 
-
+# helper functions
 def check_equal_length(d: dict, name: str):
     lengths = [len(y) for y in d.values()]
     assert (
         len(set(lengths)) == 1
     ), f"Different length of {name} parameters: { {k:len(v) for k, v in d.items()} }"
 
-
+# unused?
 def convert_to_python_types(array: Union[list, np.ndarray]) -> list:
     return getattr(array, "tolist", lambda: array)()
 
@@ -37,7 +41,7 @@ def order_proper(idxs: np.ndarray) -> np.ndarray:
     else:
         return np.flip(idxs)
 
-
+# unused?
 def elements_to_string(l: list):
     for i, e in enumerate(l):
         if isinstance(e, list):
@@ -45,67 +49,7 @@ def elements_to_string(l: list):
         else:
             l[i] = str(e)
 
-
-def clean_parameters(parameters: dict) -> dict:
-    harmonic_keys = {"idxs", "eq", "k"}
-    dihedral_keys = {"idxs", "phases", "ks", "ns"}
-    parameters_clean = {
-        "atom": {"idxs": [], "q": []},
-        "bond": {k: [] for k in harmonic_keys},
-        "angle": {k: [] for k in harmonic_keys},
-        "proper": {k: [] for k in dihedral_keys},
-        "improper": {k: [] for k in dihedral_keys},
-    }
-    # convert from kJ/mol/deg-2 to kJ/mol/rad-2 because GROMACS units are inconsistent
-    parameters["angle_k"] = parameters["angle_k"] * (180.0**2 / math.pi**2)
-    parameters["proper_idxs"] = np.array(
-        [order_proper(x) for x in parameters["proper_idxs"]]
-    )
-
-    try:
-        for atomic in parameters_clean.keys():
-            for parameter in parameters_clean[atomic].keys():
-                key = atomic + "_" + parameter
-                parameters_clean[atomic][parameter] = convert_to_python_types(
-                    parameters[key]
-                )
-                elements_to_string(parameters_clean[atomic][parameter])
-    except KeyError:
-        raise KeyError(
-            f"GrAPPa returned parameters {list(parameters.keys())}, which do not contain the required sections to fill {parameters_clean}"
-        )
-
-    for name, atomic in parameters_clean.items():
-        check_equal_length(atomic, name)
-
-    ## sample type check
-    assert parameters_clean["atom"]["idxs"][
-        0
-    ].isdigit(), f"atom idxs element does not look like int {parameters_clean['atom']['idxs'][0]}."
-    assert (
-        parameters_clean["bond"]["k"][0]
-        .strip()
-        .lstrip("-")
-        .replace(".", "", 1)
-        .isdigit()
-    ), f"b k element does not look like float {parameters_clean['bond']['k'][0]}."
-    assert isinstance(
-        parameters_clean["proper"]["ns"][0], list
-    ), f"proper ns element has wrong type {type(parameters_clean['proper']['ns'][0])}, should be list."
-    assert (
-        parameters_clean["improper"]["phases"][0][0]
-        .strip()
-        .lstrip("-")
-        .replace(".", "", 1)
-        .isdigit()
-    ), f"improper phases element does not look like float {type(parameters_clean['improper']['phases'][0][0])}"
-    return parameters_clean
-
-
-def move_residual_charge_to_radical(partial_charges:list[float],radical_idx:int, total_charge:float):
-    partial_charges[radical_idx] += total_charge - sum(partial_charges)
-    return partial_charges
-
+# workflow functions
 def build_molecule(top: Topology) -> Molecule:
     at_map = top.ff.atomtypes
     atom_info = {'nr':[],'atomic_number':[],'partial_charges':[],'sigma':[],'epsilon':[],'is_radical':[]}
@@ -124,13 +68,60 @@ def build_molecule(top: Topology) -> Molecule:
     return mol
 
 
-def apply_parameters(top: Topology, parameters: dict):
-    # parameter structure is defined in clean_parameters()
+def convert_parameters(parameters: Parameters) -> Parameters:
+    # parameters are in  kcal/mol, Angstrom und rad
+    # convert to kJ/mol, nm and degree(mostly)
+    distance_factor = convert(1,openmm_unit.angstrom,openmm_unit.nanometer)
+    degree_factor = convert(1,openmm_unit.radian, openmm_unit.degree)
+    energy_factor = convert(1,openmm_unit.kilocalorie_per_mole,openmm_unit.kilojoule_per_mole)
+
+    # convert parameters
+    parameters.bond_eq = parameters.bond_eq * distance_factor
+    parameters.bond_k = parameters.bond_k * energy_factor / np.power(distance_factor,2)
+    # angles are given in degrees and force constants in kJ/mol/rad**2.
+    parameters.angle_eq = parameters.angle_eq * degree_factor
+    parameters.angle_k = parameters.angle_k * energy_factor 
+
+    parameters.propers = np.array([order_proper(x) for x in parameters.propers])
+    parameters.proper_phases = parameters.proper_phases * degree_factor
+    parameters.proper_ks = parameters.proper_ks * energy_factor
+
+    parameters.improper_phases = parameters.improper_phases * degree_factor
+    parameters.improper_ks = parameters.improper_ks * energy_factor
+
+    # convert to list of strings
+    for k in parameters.__annotations__.keys():
+        v = getattr(parameters,k)
+        if isinstance(v[0],float):
+            v_list = [f"{i:11.4f}".strip() for i in v]
+        elif isinstance(v[0],np.ndarray) and isinstance(v[0,0],float):
+            v_list = []
+            for sub_list in v:
+                v_list.append([f"{i:11.4f}".strip() for i in sub_list])
+        else:
+            v_list = v.astype(str).tolist()
+        setattr(parameters,k,v_list)
+
+    return parameters
+
+
+def move_residual_charge_to_radical(partial_charges:list[float],radical_idx:int, total_charge:float):
+    partial_charges[radical_idx] += total_charge - sum(partial_charges)
+    return partial_charges
+
+
+def treat_radical_partial_charges(partial_charges: list[float]) -> list[float]:
+    return partial_charges
+
+
+
+def apply_parameters(top: Topology, parameters: Parameters, partial_charges: list[float]):
+    # parameter structure is defined in grappa.data.Parameters.Parameters
     # assume units are according to https://manual.gromacs.org/current/reference-manual/definitions.html
     # namely: length [nm], mass [kg], time [ps], energy [kJ/mol], force [kJ mol-1 nm-1], angle [deg]
 
     ## atoms
-    for i, idx in enumerate(parameters["atom"]["idxs"]):
+    for i, idx in enumerate(parameters.atoms):
         if not (atom := top.atoms.get(idx)):
             # raise KeyError(f"bad index {idx} in {list(top.atoms.keys())}")
             logging.warning(
@@ -138,39 +129,39 @@ def apply_parameters(top: Topology, parameters: dict):
             )  # this can happen when removing a hydrogen in kimmdy-remove-hydrogen
             continue
         # can anything but charge change??
-        atom.charge = parameters["atom"]["q"][i]
+        atom.charge = f"{partial_charges[i]:7.4f}"
         atom.chargeB = None
 
     ## bonds
-    for i, idx in enumerate(parameters["bond"]["idxs"]):
+    for i, idx in enumerate(parameters.bonds):
         tup = tuple(idx)
         if not top.bonds.get(tup):
             # raise KeyError(f"bad index {tup} in {list(top.bonds.keys())}")
             logging.warning(f"Ignored parameters with invalid ids: {tup} for bonds")
             continue
         top.bonds[tup] = Bond(
-            *parameters["bond"]["idxs"][i],
+            *tup,
             funct="1",
-            c0=parameters["bond"]["eq"][i],
-            c1=parameters["bond"]["k"][i],
+            c0=parameters.bond_eq[i],
+            c1=parameters.bond_k[i],
         )
 
     ## angles
-    for i, idx in enumerate(parameters["angle"]["idxs"]):
+    for i, idx in enumerate(parameters.angles):
         tup = tuple(idx)
         if not top.angles.get(tup):
             # raise KeyError(f"bad index {tup} in {list(top.angles.keys())}")
             logging.warning(f"Ignored parameters with invalid ids: {tup} for angles")
             continue
         top.angles[tup] = Angle(
-            *parameters["angle"]["idxs"][i],
+            *tup,
             funct="1",
-            c0=parameters["angle"]["eq"][i],
-            c1=parameters["angle"]["k"][i],
+            c0=parameters.angle_eq[i],
+            c1=parameters.angle_k[i],
         )
 
     ## proper dihedrals
-    for i, idx in enumerate(parameters["proper"]["idxs"]):
+    for i, idx in enumerate(parameters.propers):
         tup = tuple(idx)
         if not top.proper_dihedrals.get(tup):
             # raise KeyError(f"bad index {tup} in {list(top.proper_dihedrals.keys())}")
@@ -179,12 +170,13 @@ def apply_parameters(top: Topology, parameters: dict):
             )
             continue
         dihedral_dict = {}
-        for ii, n in enumerate(parameters["proper"]["ns"][i]):
+        for ii in range(len(parameters.proper_ks[i])):
+            n = str(ii+1)
             dihedral_dict[n] = Dihedral(
                 *tup,
                 funct="9",
-                c0=parameters["proper"]["phases"][i][ii],
-                c1=parameters["proper"]["ks"][i][ii],
+                c0=parameters.proper_phases[i][ii],
+                c1=parameters.proper_ks[i][ii],
                 periodicity=n,
             )
         top.proper_dihedrals[tup] = MultipleDihedrals(
@@ -193,23 +185,37 @@ def apply_parameters(top: Topology, parameters: dict):
 
     ## improper dihedrals
     top.improper_dihedrals = {}
-    for i, idx in enumerate(parameters["improper"]["idxs"]):
+    for i, idx in enumerate(parameters.impropers):
         tup = tuple(idx)
-        for ii, n in enumerate(parameters["improper"]["ns"][i]):
+        for ii in range(len(parameters.improper_ks[i])):
+            n = str(ii+1)
             if not math.isclose(
-                float(parameters["improper"]["ks"][i][ii]), 0.0, abs_tol=1e-4
+                float(parameters.improper_ks[i][ii]), 0.0, abs_tol=1e-3
             ):
-                if not top.improper_dihedrals.get(tup):
+                if curr_improper := (top.improper_dihedrals.get(tup)) is None:
                     top.improper_dihedrals[tup] = Dihedral(
                         *tup,
                         funct="4",
-                        c0=parameters["improper"]["phases"][i][ii],
-                        c1=parameters["improper"]["ks"][i][ii],
+                        c0=parameters.improper_phases[i][ii],
+                        c1=parameters.improper_ks[i][ii],
                         periodicity=n,
                     )
                 else:
+                    new_improper = Dihedral(
+                        *tup,
+                        funct="4",
+                        c0=parameters.improper_phases[i][ii],
+                        c1=parameters.improper_ks[i][ii],
+                        periodicity=n,
+                    )
+                    if new_improper.c1 > curr_improper.c1:
+                        top.improper_dihedrals[tup] = new_improper
+                        deserted_improper = curr_improper
+                    else:
+                        deserted_improper = new_improper
+
                     logger.warning(
-                        f"There are multiple improper dihedrals for {tup} and only one can be chosen, dihedral {n} with amplitude of {parameters['proper']['ks'][i][ii]} will be ignored."
+                        f"There are multiple improper dihedrals for {tup} and only one can be chosen, dihedral p{deserted_improper} will be ignored."
                     )
 
     return
@@ -231,12 +237,12 @@ class GrappaInterface(Parameterizer):
         grappa = Grappa(model,device='cpu')
         parameters = grappa.predict(mol)
 
-        parameters_dict = parameters.to_dict()
-        write_json(parameters_dict, "out_raw.json")
-        
+        # convert units et cetera
+        parameters = convert_parameters(parameters)
 
-        # parameters = clean_parameters(parameters)
+        # check for changes to partial charges
+        partial_charges = treat_radical_partial_charges(mol.partial_charges)
 
-
-        # apply_parameters(current_topology, parameters)
+        # apply parameters
+        apply_parameters(current_topology, parameters, partial_charges)
         return current_topology
