@@ -97,8 +97,7 @@ def test_convert_parameters(grappa_output_raw, grappa_output_converted):
 
 def test_apply_parameters(grappa_output_converted):
     top = Topology(read_top(Path(__file__).parent / "Ala_out.top"))
-    partial_charges = np.zeros_like(grappa_output_converted.atoms,dtype=float).tolist()
-    apply_parameters(top, grappa_output_converted, partial_charges)
+    apply_parameters(top, grappa_output_converted)
 
     write_top(top.to_dict(), Path(__file__).parents[0] / "tmp" / "out_parameterized.top")
 

@@ -5,7 +5,7 @@ import math
 from typing import Union
 
 from kimmdy.topology.topology import Topology
-from kimmdy.topology.atomic import Bond, Angle, Dihedral, MultipleDihedrals
+from kimmdy.topology.atomic import Atom, Bond, Angle, Dihedral, MultipleDihedrals
 from kimmdy.topology.utils import get_by_permutations
 from kimmdy.plugins import Parameterizer
 from kimmdy.parsing import write_json
@@ -104,33 +104,13 @@ def convert_parameters(parameters: Parameters) -> Parameters:
 
     return parameters
 
-
-def move_residual_charge_to_radical(partial_charges:list[float],radical_idx:int, total_charge:float):
-    partial_charges[radical_idx] += total_charge - sum(partial_charges)
-    return partial_charges
-
-
-def treat_radical_partial_charges(partial_charges: list[float]) -> list[float]:
-    return partial_charges
-
-
-
-def apply_parameters(top: Topology, parameters: Parameters, partial_charges: list[float]):
+def apply_parameters(top: Topology, parameters: Parameters):
     # parameter structure is defined in grappa.data.Parameters.Parameters
     # assume units are according to https://manual.gromacs.org/current/reference-manual/definitions.html
     # namely: length [nm], mass [kg], time [ps], energy [kJ/mol], force [kJ mol-1 nm-1], angle [deg]
 
     ## atoms
-    for i, idx in enumerate(parameters.atoms):
-        if not (atom := top.atoms.get(idx)):
-            # raise KeyError(f"bad index {idx} in {list(top.atoms.keys())}")
-            logging.warning(
-                f"Ignored parameters with invalid ids: {idx} for atoms"
-            )  # this can happen when removing a hydrogen in kimmdy-remove-hydrogen
-            continue
-        # can anything but charge change??
-        atom.charge = f"{partial_charges[i]:7.4f}"
-        atom.chargeB = None
+    # Nothing to do here because partial charges are dealt with elsewhere
 
     ## bonds
     for i, idx in enumerate(parameters.bonds):
@@ -240,9 +220,6 @@ class GrappaInterface(Parameterizer):
         # convert units et cetera
         parameters = convert_parameters(parameters)
 
-        # check for changes to partial charges
-        partial_charges = treat_radical_partial_charges(mol.partial_charges)
-
         # apply parameters
-        apply_parameters(current_topology, parameters, partial_charges)
+        apply_parameters(current_topology, parameters)
         return current_topology
