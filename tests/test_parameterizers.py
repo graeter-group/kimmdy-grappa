@@ -58,7 +58,7 @@ def grappa_output_converted():
 def test_generate_input():
     top = Topology(read_top(Path(__file__).parent / "Ala_out.top"))
     mol = build_molecule(top)
-    mol.to_json("in.json")
+    mol.to_json( Path(__file__).parents[0] / "tmp" / "in.json")
 
     assert len(mol.atoms) == 21
     assert len(mol.bonds) == 20
@@ -78,8 +78,8 @@ def test_predict_parameters(grappa_input,grappa_output_raw):
     grappa = Grappa(model,device='cpu')
     parameters = grappa.predict(grappa_input)
 
-    # parameters_dict = parameters.to_dict()
-    # write_json(parameters_dict, "out_raw.json")
+    parameters_dict = parameters.to_dict()
+    write_json(parameters_dict,  Path(__file__).parents[0] / "tmp" / "out_raw.json")
    
     # check for equality per attribute
     for k in grappa_output_raw.__annotations__.keys():
@@ -90,7 +90,7 @@ def test_convert_parameters(grappa_output_raw, grappa_output_converted):
     parameters = convert_parameters(grappa_output_raw)
 
     parameters_dict = parameters.to_dict()
-    write_json(parameters_dict, "out_converted.json")
+    write_json(parameters_dict, Path(__file__).parents[0] / "tmp" / "out_converted.json")
 
     assert parameters == grappa_output_converted    
 
@@ -100,7 +100,7 @@ def test_apply_parameters(grappa_output_converted):
     partial_charges = np.zeros_like(grappa_output_converted.atoms,dtype=float).tolist()
     apply_parameters(top, grappa_output_converted, partial_charges)
 
-    write_top(top.to_dict(),Path(__file__).parents[0] / "out_parameterized.top")
+    write_top(top.to_dict(), Path(__file__).parents[0] / "tmp" / "out_parameterized.top")
 
 
 def test_parameterize_topology(tmp_path):
