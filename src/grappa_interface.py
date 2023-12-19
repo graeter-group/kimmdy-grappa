@@ -236,7 +236,7 @@ class GrappaInterface(Parameterizer):
     ) -> Topology:
         ## get atoms, bonds, radicals in required format
         mol = build_molecule(current_topology)
-        mol.to_json("in.json")
+        logger.debug(mol.to_dict())
 
         # load model, tag will be changed to be more permanent
         model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth"
