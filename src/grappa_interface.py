@@ -1,6 +1,7 @@
 import logging
 import numpy as np
-np.set_printoptions(suppress=True,precision=6) #prevent numpy exponential 
+
+np.set_printoptions(suppress=True, precision=6)  # prevent numpy exponential
 import math
 from typing import Union
 
@@ -21,12 +22,14 @@ from grappa.units import convert
 
 logger = logging.getLogger("kimmdy.grappa_interface")
 
+
 # helper functions
 def check_equal_length(d: dict, name: str):
     lengths = [len(y) for y in d.values()]
     assert (
         len(set(lengths)) == 1
     ), f"Different length of {name} parameters: { {k:len(v) for k, v in d.items()} }"
+
 
 # unused?
 def convert_to_python_types(array: Union[list, np.ndarray]) -> list:
@@ -41,6 +44,7 @@ def order_proper(idxs: np.ndarray) -> np.ndarray:
     else:
         return np.flip(idxs)
 
+
 # unused?
 def elements_to_string(l: list):
     for i, e in enumerate(l):
@@ -49,38 +53,62 @@ def elements_to_string(l: list):
         else:
             l[i] = str(e)
 
+
 # workflow functions
 def build_molecule(top: Topology) -> Molecule:
     at_map = top.ff.atomtypes
-    atom_info = {'nr':[],'atomic_number':[],'partial_charges':[],'sigma':[],'epsilon':[],'is_radical':[]}
+    atom_info = {
+        "nr": [],
+        "atomic_number": [],
+        "partial_charges": [],
+        "sigma": [],
+        "epsilon": [],
+        "is_radical": [],
+    }
     for atom in top.atoms.values():
-        atom_info['nr'].append(int(atom.nr))
-        atom_info['atomic_number'].append(int(at_map[atom.type].at_num))
-        atom_info['partial_charges'].append(float(atom.charge))
-        atom_info['sigma'].append(float(at_map[atom.type].sigma))
-        atom_info['epsilon'].append(float(at_map[atom.type].epsilon))
-        atom_info['is_radical'].append(int(atom.is_radical))
+        atom_info["nr"].append(int(atom.nr))
+        atom_info["atomic_number"].append(int(at_map[atom.type].at_num))
+        atom_info["partial_charges"].append(float(atom.charge))
+        atom_info["sigma"].append(float(at_map[atom.type].sigma))
+        atom_info["epsilon"].append(float(at_map[atom.type].epsilon))
+        atom_info["is_radical"].append(int(atom.is_radical))
 
     bonds = [(int(bond.ai), int(bond.aj)) for bond in top.bonds.values()]
-    impropers = [(int(improper.ai), int(improper.aj),int(improper.ak),int(improper.al)) for improper in top.improper_dihedrals.values()]
+    impropers = [
+        (int(improper.ai), int(improper.aj), int(improper.ak), int(improper.al))
+        for improper in top.improper_dihedrals.values()
+    ]
 
-    mol = Molecule(atoms=atom_info["nr"],bonds=bonds,impropers=impropers,atomic_numbers=atom_info["atomic_number"],partial_charges=atom_info["partial_charges"],additional_features={k:np.asarray(v) for k,v in atom_info.items() if k not in ['nr','atomic_number','partial_charges']})
+    mol = Molecule(
+        atoms=atom_info["nr"],
+        bonds=bonds,
+        impropers=impropers,
+        atomic_numbers=atom_info["atomic_number"],
+        partial_charges=atom_info["partial_charges"],
+        additional_features={
+            k: np.asarray(v)
+            for k, v in atom_info.items()
+            if k not in ["nr", "atomic_number", "partial_charges"]
+        },
+    )
     return mol
 
 
 def convert_parameters(parameters: Parameters) -> Parameters:
     # parameters are in  kcal/mol, Angstrom und rad
     # convert to kJ/mol, nm and degree(mostly)
-    distance_factor = convert(1,openmm_unit.angstrom,openmm_unit.nanometer)
-    degree_factor = convert(1,openmm_unit.radian, openmm_unit.degree)
-    energy_factor = convert(1,openmm_unit.kilocalorie_per_mole,openmm_unit.kilojoule_per_mole)
+    distance_factor = convert(1, openmm_unit.angstrom, openmm_unit.nanometer)
+    degree_factor = convert(1, openmm_unit.radian, openmm_unit.degree)
+    energy_factor = convert(
+        1, openmm_unit.kilocalorie_per_mole, openmm_unit.kilojoule_per_mole
+    )
 
     # convert parameters
     parameters.bond_eq = parameters.bond_eq * distance_factor
-    parameters.bond_k = parameters.bond_k * energy_factor / np.power(distance_factor,2)
+    parameters.bond_k = parameters.bond_k * energy_factor / np.power(distance_factor, 2)
     # angles are given in degrees and force constants in kJ/mol/rad**2.
     parameters.angle_eq = parameters.angle_eq * degree_factor
-    parameters.angle_k = parameters.angle_k * energy_factor 
+    parameters.angle_k = parameters.angle_k * energy_factor
 
     parameters.propers = np.array([order_proper(x) for x in parameters.propers])
     parameters.proper_phases = parameters.proper_phases * degree_factor
@@ -91,18 +119,19 @@ def convert_parameters(parameters: Parameters) -> Parameters:
 
     # convert to list of strings
     for k in parameters.__annotations__.keys():
-        v = getattr(parameters,k)
-        if isinstance(v[0],float):
+        v = getattr(parameters, k)
+        if isinstance(v[0], float):
             v_list = [f"{i:11.4f}".strip() for i in v]
-        elif isinstance(v[0],np.ndarray) and isinstance(v[0,0],float):
+        elif isinstance(v[0], np.ndarray) and isinstance(v[0, 0], float):
             v_list = []
             for sub_list in v:
                 v_list.append([f"{i:11.4f}".strip() for i in sub_list])
         else:
             v_list = v.astype(str).tolist()
-        setattr(parameters,k,v_list)
+        setattr(parameters, k, v_list)
 
     return parameters
+
 
 def apply_parameters(top: Topology, parameters: Parameters):
     # parameter structure is defined in grappa.data.Parameters.Parameters
@@ -151,7 +180,7 @@ def apply_parameters(top: Topology, parameters: Parameters):
             continue
         dihedral_dict = {}
         for ii in range(len(parameters.proper_ks[i])):
-            n = str(ii+1)
+            n = str(ii + 1)
             dihedral_dict[n] = Dihedral(
                 *tup,
                 funct="9",
@@ -168,7 +197,7 @@ def apply_parameters(top: Topology, parameters: Parameters):
     for i, idx in enumerate(parameters.impropers):
         tup = tuple(idx)
         for ii in range(len(parameters.improper_ks[i])):
-            n = str(ii+1)
+            n = str(ii + 1)
             if not math.isclose(
                 float(parameters.improper_ks[i][ii]), 0.0, abs_tol=1e-3
             ):
@@ -210,11 +239,11 @@ class GrappaInterface(Parameterizer):
         mol.to_json("in.json")
 
         # load model, tag will be changed to be more permanent
-        model_tag =  'https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth'
+        model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth"
         model = load_model(model_tag)
 
         # initialize class that handles ML part
-        grappa = Grappa(model,device='cpu')
+        grappa = Grappa(model, device="cpu")
         parameters = grappa.predict(mol)
 
         # convert units et cetera
