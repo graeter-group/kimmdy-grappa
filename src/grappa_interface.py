@@ -120,15 +120,18 @@ def convert_parameters(parameters: Parameters) -> Parameters:
     # convert to list of strings
     for k in parameters.__annotations__.keys():
         v = getattr(parameters, k)
-        if isinstance(v[0], float):
-            v_list = [f"{i:11.4f}".strip() for i in v]
-        elif isinstance(v[0], np.ndarray) and isinstance(v[0, 0], float):
-            v_list = []
-            for sub_list in v:
-                v_list.append([f"{i:11.4f}".strip() for i in sub_list])
+        if len(v) == 0:
+            logger.info(f"Parameter list {k} is empty.")
         else:
-            v_list = v.astype(str).tolist()
-        setattr(parameters, k, v_list)
+            if isinstance(v[0], float):
+                v_list = [f"{i:11.4f}".strip() for i in v]
+            elif isinstance(v[0], np.ndarray) and isinstance(v[0, 0], float):
+                v_list = []
+                for sub_list in v:
+                    v_list.append([f"{i:11.4f}".strip() for i in sub_list])
+            else:
+                v_list = v.astype(str).tolist()
+            setattr(parameters, k, v_list)
 
     return parameters
 
