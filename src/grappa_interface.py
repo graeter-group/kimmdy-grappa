@@ -243,7 +243,7 @@ class GrappaInterface(Parameterizer):
 
         # load model, tag will be changed to be more permanent
         #model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth"    # older model
-        model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/model_release/grappa-1.0-01-26-2024.pth"
+        model_tag = "grappa-1.0"
         model = model_from_url(model_tag)
 
         # initialize class that handles ML part
