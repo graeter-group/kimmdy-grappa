@@ -140,8 +140,8 @@ def convert_parameters(parameters: Parameters) -> Parameters:
 
 
 def apply_parameters(top: Topology, parameters: Parameters):
-    """ Applies parameters to topology
-    
+    """Applies parameters to topology
+
     parameter structure is defined in grappa.data.Parameters.Parameters
     assume units are according to https://manual.gromacs.org/current/reference-manual/definitions.html
     namely: length [nm], mass [kg], time [ps], energy [kJ/mol], force [kJ mol-1 nm-1], angle [deg]
@@ -242,7 +242,7 @@ def apply_parameters(top: Topology, parameters: Parameters):
 def load_model():
     """Loads grappa model"""
     # load model, tag will be changed to be more permanent
-    #model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth"  # older model
+    # model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth"  # older model
     model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/model_release/grappa-1.0-01-26-2024.pth"
     model = model_from_url(model_tag)
     return model

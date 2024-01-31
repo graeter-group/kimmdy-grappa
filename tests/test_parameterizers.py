@@ -1,6 +1,6 @@
 import pytest
 
-#pytest.importorskip("kimmdy-grappa")
+# pytest.importorskip("kimmdy-grappa")
 pytest.importorskip("grappa")
 
 import os
@@ -14,7 +14,7 @@ from grappa_interface import (
     build_molecule,
     apply_parameters,
     GrappaInterface,
-    load_model
+    load_model,
 )
 
 from grappa.grappa import Grappa
