@@ -95,8 +95,11 @@ def build_molecule(top: Topology) -> Molecule:
 
 
 def convert_parameters(parameters: Parameters) -> Parameters:
-    # parameters are in  kcal/mol, Angstrom und rad
-    # convert to kJ/mol, nm and degree(mostly)
+    """Converts parameters to gromacs units
+    Assumes input parameters to be in  kcal/mol, Angstrom und rad
+    Gromac units mostly kJ/mol, nm and degree
+    """
+
     distance_factor = convert(1, openmm_unit.angstrom, openmm_unit.nanometer)
     degree_factor = convert(1, openmm_unit.radian, openmm_unit.degree)
     energy_factor = convert(
@@ -137,9 +140,12 @@ def convert_parameters(parameters: Parameters) -> Parameters:
 
 
 def apply_parameters(top: Topology, parameters: Parameters):
-    # parameter structure is defined in grappa.data.Parameters.Parameters
-    # assume units are according to https://manual.gromacs.org/current/reference-manual/definitions.html
-    # namely: length [nm], mass [kg], time [ps], energy [kJ/mol], force [kJ mol-1 nm-1], angle [deg]
+    """ Applies parameters to topology
+    
+    parameter structure is defined in grappa.data.Parameters.Parameters
+    assume units are according to https://manual.gromacs.org/current/reference-manual/definitions.html
+    namely: length [nm], mass [kg], time [ps], energy [kJ/mol], force [kJ mol-1 nm-1], angle [deg]
+    """
 
     ## atoms
     # Nothing to do here because partial charges are dealt with elsewhere
@@ -233,6 +239,15 @@ def apply_parameters(top: Topology, parameters: Parameters):
     return
 
 
+def load_model():
+    """Loads grappa model"""
+    # load model, tag will be changed to be more permanent
+    #model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth"  # older model
+    model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/model_release/grappa-1.0-01-26-2024.pth"
+    model = model_from_url(model_tag)
+    return model
+
+
 class GrappaInterface(Parameterizer):
     def parameterize_topology(
         self, current_topology: Topology, focus_nr: list[str] = []
@@ -241,10 +256,7 @@ class GrappaInterface(Parameterizer):
         mol = build_molecule(current_topology)
         logger.debug(mol.to_dict())
 
-        # load model, tag will be changed to be more permanent
-        #model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth"    # older model
-        model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/model_release/grappa-1.0-01-26-2024.pth"
-        model = model_from_url(model_tag)
+        model = load_model()
 
         # initialize class that handles ML part
         grappa = Grappa(model, device="cpu")

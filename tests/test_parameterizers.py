@@ -14,6 +14,7 @@ from grappa_interface import (
     build_molecule,
     apply_parameters,
     GrappaInterface,
+    load_model
 )
 
 from grappa.grappa import Grappa
@@ -74,10 +75,7 @@ def test_generate_input():
 
 
 def test_predict_parameters(grappa_input, grappa_output_raw):
-    # load model, tag will be changed to be more permanent
-    #model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth"
-    model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/model_release/grappa-1.0-01-26-2024.pth"
-    model = model_from_url(model_tag)
+    model = load_model()
 
     # initialize class that handles ML part
     grappa = Grappa(model, device="cpu")
