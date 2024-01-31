@@ -29,7 +29,7 @@ example/**/pycallgraph.png
 
 # tutorials and example output files
 guide/kimmdy-tutorial
-
+amber*
 
 # excludes
 !tests/test_files/test_coordinates/pull.trr
