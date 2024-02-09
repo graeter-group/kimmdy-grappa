@@ -14,7 +14,7 @@ from kimmdy.parsing import write_json
 from grappa.data import Molecule
 from grappa.data import Parameters
 
-from grappa.utils.loading_utils import model_from_url
+from grappa.utils.loading_utils import model_from_tag
 from grappa.grappa import Grappa
 
 from openmm import unit as openmm_unit
@@ -90,6 +90,7 @@ def build_molecule(top: Topology) -> Molecule:
             for k, v in atom_info.items()
             if k not in ["nr", "atomic_number", "partial_charges"]
         },
+        charge_model='classical',
     )
     return mol
 
@@ -243,8 +244,8 @@ def load_model():
     """Loads grappa model"""
     # load model, tag will be changed to be more permanent
     # model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth"  # older model
-    model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/model_release/grappa-1.0-01-26-2024.pth"
-    model = model_from_url(model_tag)
+    model_tag = "grappa-1.0"
+    model = model_from_tag(model_tag)
     return model
 
 
