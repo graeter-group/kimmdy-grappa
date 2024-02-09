@@ -90,7 +90,7 @@ def build_molecule(top: Topology) -> Molecule:
             for k, v in atom_info.items()
             if k not in ["nr", "atomic_number", "partial_charges"]
         },
-        charge_model='classical',
+        charge_model="classical",
     )
     return mol
 
