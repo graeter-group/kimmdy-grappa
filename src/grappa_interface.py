@@ -254,7 +254,6 @@ class GrappaInterface(Parameterizer):
     ) -> Topology:
         ## get atoms, bonds, radicals in required format
         mol = build_molecule(current_topology)
-        logger.debug(mol.to_dict())
 
         model = load_model()
 
