@@ -1,4 +1,4 @@
-# A paremeterization plugin for GraPPA for KIMMDY
+# A parameterization plugin for GraPPA for KIMMDY
 
 
 
