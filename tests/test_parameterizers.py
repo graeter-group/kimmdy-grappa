@@ -1,3 +1,5 @@
+'''NOTE: MODEL_FROM_URL IS OUTDATED!'''
+
 import pytest
 
 #pytest.importorskip("kimmdy-grappa")
