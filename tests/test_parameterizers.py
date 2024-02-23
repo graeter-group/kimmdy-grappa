@@ -2,7 +2,7 @@
 
 import pytest
 
-#pytest.importorskip("kimmdy-grappa")
+# pytest.importorskip("kimmdy-grappa")
 pytest.importorskip("grappa")
 
 import os
@@ -16,12 +16,12 @@ from grappa_interface import (
     build_molecule,
     apply_parameters,
     GrappaInterface,
+    load_model,
 )
 
 from grappa.grappa import Grappa
 from grappa.data.Molecule import Molecule
 from grappa.data.Parameters import Parameters
-from grappa.utils.loading_utils import model_from_url
 
 from kimmdy.topology.topology import Topology
 from kimmdy.constants import AA3
@@ -64,7 +64,9 @@ def grappa_output_converted():
 def test_generate_input():
     top = Topology(read_top(Path(__file__).parent / "Ala_out.top"))
     mol = build_molecule(top)
-    mol.to_json(Path(__file__).parents[0] / "tmp" / "in.json")
+    out_path = Path(__file__).parents[0] / "tmp" / "in.json"
+    out_path.parents[0].mkdir(parents=True, exist_ok=True)
+    mol.to_json(out_path)
 
     assert len(mol.atoms) == 21
     assert len(mol.bonds) == 20
@@ -76,17 +78,16 @@ def test_generate_input():
 
 
 def test_predict_parameters(grappa_input, grappa_output_raw):
-    # load model, tag will be changed to be more permanent
-    #model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/test_release_radicals/radical_model_12142023.pth"
-    model_tag = "https://github.com/LeifSeute/test_torchhub/releases/download/model_release/grappa-1.0-01-26-2024.pth"
-    model = model_from_url(model_tag)
+    model = load_model()
 
     # initialize class that handles ML part
     grappa = Grappa(model, device="cpu")
     parameters = grappa.predict(grappa_input)
 
     parameters_dict = parameters.to_dict()
-    write_json(parameters_dict, Path(__file__).parents[0] / "tmp" / "out_raw.json")
+    out_path = Path(__file__).parents[0] / "tmp" / "out_raw.json"
+    out_path.parents[0].mkdir(parents=True, exist_ok=True)
+    write_json(parameters_dict, out_path)
 
     # check for equality per attribute
     for k in grappa_output_raw.__annotations__.keys():
@@ -97,9 +98,9 @@ def test_convert_parameters(grappa_output_raw, grappa_output_converted):
     parameters = convert_parameters(grappa_output_raw)
 
     parameters_dict = parameters.to_dict()
-    write_json(
-        parameters_dict, Path(__file__).parents[0] / "tmp" / "out_converted.json"
-    )
+    out_path = Path(__file__).parents[0] / "tmp" / "out_converted.json"
+    out_path.parents[0].mkdir(parents=True, exist_ok=True)
+    write_json(parameters_dict, out_path)
 
     assert parameters == grappa_output_converted
 
@@ -108,9 +109,9 @@ def test_apply_parameters(grappa_output_converted):
     top = Topology(read_top(Path(__file__).parent / "Ala_out.top"))
     apply_parameters(top, grappa_output_converted)
 
-    write_top(
-        top.to_dict(), Path(__file__).parents[0] / "tmp" / "out_parameterized.top"
-    )
+    out_path = Path(__file__).parents[0] / "tmp" / "out_parameterized.json"
+    out_path.parents[0].mkdir(parents=True, exist_ok=True)
+    write_top(top.to_dict(), out_path)
 
 
 def test_parameterize_topology(tmp_path):

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.5](https://github.com/hits-mbm-dev/kimmdy-grappa/compare/v0.1.4...v0.1.5) (2024-02-12)
+
+
+### Bug Fixes
+
+* don't dump mol into log ([b98aa9e](https://github.com/hits-mbm-dev/kimmdy-grappa/commit/b98aa9edad2d12aaca958e97ff2cd7b31072bdca))
+
+## [0.1.4](https://github.com/hits-mbm-dev/kimmdy-grappa/compare/v0.1.3...v0.1.4) (2024-01-31)
+
+
+### Bug Fixes
+
+* fail for molecule without a certain type of parameters ([27de85d](https://github.com/hits-mbm-dev/kimmdy-grappa/commit/27de85d9baefe9883e596f34ddd313de8df36621))
+
 ## [0.1.3](https://github.com/hits-mbm-dev/kimmdy-grappa/compare/v0.1.2...v0.1.3) (2023-11-07)
 
 
