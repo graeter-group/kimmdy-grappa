@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/hits-mbm-dev/kimmdy-grappa/compare/v0.1.5...v0.2.0) (2024-02-26)
+
+
+### Features
+
+* make grappa v.1.1 compatible (tested) ([3b545f6](https://github.com/hits-mbm-dev/kimmdy-grappa/commit/3b545f613118905cd21331fc597ddbf5661c84e9))
+* Merge pull request [#14](https://github.com/hits-mbm-dev/kimmdy-grappa/issues/14) from hits-mbm-dev/grappa1.1_compatible ([3b545f6](https://github.com/hits-mbm-dev/kimmdy-grappa/commit/3b545f613118905cd21331fc597ddbf5661c84e9))
+
 ## [0.1.5](https://github.com/hits-mbm-dev/kimmdy-grappa/compare/v0.1.4...v0.1.5) (2024-02-12)
 
 
