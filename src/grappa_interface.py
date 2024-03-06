@@ -5,7 +5,6 @@ from kimmdy.topology.topology import Topology
 
 from grappa.grappa import Grappa
 from grappa.utils.kimmdy_utils import KimmdyGrappaParameterizer
-from grappa.utils.loading_utils import model_from_tag
 
 logger = logging.getLogger("kimmdy.grappa_interface")
 
@@ -29,8 +28,8 @@ class GrappaInterface(Parameterizer):
         )
 
     def parameterize_topology(
-        self, current_topology: Topology, focus_nr: list[str] = []
+        self, current_topology: Topology, focus_nrs: dict[str, set[str]] = {}
     ) -> Topology:
         return self.kimmdy_grappa_parameterizer.parameterize_topology(
-            current_topology=current_topology, focus_nr=focus_nr
+            current_topology=current_topology, focus_nrs=focus_nrs
         )
