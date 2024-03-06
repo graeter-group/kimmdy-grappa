@@ -28,7 +28,7 @@ class GrappaInterface(Parameterizer):
         )
 
     def parameterize_topology(
-        self, current_topology: Topology, focus_nrs: dict[str, set[str]] = {}
+        self, current_topology: Topology, focus_nrs: set = set()
     ) -> Topology:
         return self.kimmdy_grappa_parameterizer.parameterize_topology(
             current_topology=current_topology, focus_nrs=focus_nrs
