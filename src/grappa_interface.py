@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from kimmdy.plugins import Parameterizer
 from kimmdy.topology.topology import Topology
@@ -24,11 +25,13 @@ class GrappaInterface(Parameterizer):
         super().__init__(*args, **kwargs)
         grappa_instance = Grappa.from_tag(grappa_tag)
         self.kimmdy_grappa_parameterizer = KimmdyGrappaParameterizer(
-            grappa_instance=grappa_instance, charge_model=charge_model, grappa_tag = grappa_tag
+            grappa_instance=grappa_instance,
+            charge_model=charge_model,
+            grappa_tag=grappa_tag,
         )
 
     def parameterize_topology(
-        self, current_topology: Topology, focus_nrs: set = set()
+        self, current_topology: Topology, focus_nrs: Optional[set[str]] = None
     ) -> Topology:
         return self.kimmdy_grappa_parameterizer.parameterize_topology(
             current_topology=current_topology, focus_nrs=focus_nrs
