@@ -27,7 +27,6 @@ class GrappaInterface(Parameterizer):
         self.kimmdy_grappa_parameterizer = KimmdyGrappaParameterizer(
             grappa_instance=grappa_instance,
             charge_model=charge_model,
-            grappa_tag=grappa_tag,
         )
 
     def parameterize_topology(
