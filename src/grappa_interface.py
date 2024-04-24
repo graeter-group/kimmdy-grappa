@@ -16,11 +16,7 @@ class GrappaInterface(Parameterizer):
     """
 
     def __init__(
-        self,
-        *args,
-        grappa_tag: str = "latest",
-        charge_model: str = "classical",
-        **kwargs
+        self, *args, grappa_tag: str = "latest", charge_model: str = "amber99", **kwargs
     ):
         super().__init__(*args, **kwargs)
         grappa_instance = Grappa.from_tag(grappa_tag)
