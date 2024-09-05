@@ -1,0 +1,9 @@
+website:
+  sidebar:
+  - contents:
+    - _reference/index.qmd
+    - contents:
+      - _reference/grappa_interface.qmd
+      section: KIMMDY GRAPPA
+    id: _reference
+  - id: dummy-sidebar
