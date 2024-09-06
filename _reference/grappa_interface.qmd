@@ -1,0 +1,17 @@
+# grappa_interface { #grappa_interface }
+
+``
+
+
+
+## Classes
+
+| Name | Description |
+| --- | --- |
+| [GrappaInterface](#grappa_interface.GrappaInterface) | Wrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model. |
+
+### GrappaInterface { #grappa_interface.GrappaInterface }
+
+`GrappaInterface(self, *args, grappa_tag='latest', charge_model='amber99', **kwargs)`
+
+Wrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.

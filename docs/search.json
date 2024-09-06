@@ -1,0 +1,62 @@
+[
+  {
+    "objectID": "_reference/grappa_interface.html",
+    "href": "_reference/grappa_interface.html",
+    "title": "grappa_interface",
+    "section": "",
+    "text": "``\n\n\n\n\n\nName\nDescription\n\n\n\n\nGrappaInterface\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.\n\n\n\n\n\nGrappaInterface(self, *args, grappa_tag='latest', charge_model='amber99', **kwargs)\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.",
+    "crumbs": [
+      "Reference",
+      "KIMMDY GRAPPA",
+      "grappa_interface"
+    ]
+  },
+  {
+    "objectID": "_reference/grappa_interface.html#classes",
+    "href": "_reference/grappa_interface.html#classes",
+    "title": "grappa_interface",
+    "section": "",
+    "text": "Name\nDescription\n\n\n\n\nGrappaInterface\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.\n\n\n\n\n\nGrappaInterface(self, *args, grappa_tag='latest', charge_model='amber99', **kwargs)\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.",
+    "crumbs": [
+      "Reference",
+      "KIMMDY GRAPPA",
+      "grappa_interface"
+    ]
+  },
+  {
+    "objectID": "_reference/index.html",
+    "href": "_reference/index.html",
+    "title": "References",
+    "section": "",
+    "text": "grappa_interface",
+    "crumbs": [
+      "Reference",
+      "References"
+    ]
+  },
+  {
+    "objectID": "_reference/index.html#kimmdy-grappa",
+    "href": "_reference/index.html#kimmdy-grappa",
+    "title": "References",
+    "section": "",
+    "text": "grappa_interface",
+    "crumbs": [
+      "Reference",
+      "References"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "A parameterization plugin for GraPPA for KIMMDY",
+    "section": "",
+    "text": "test latest release\n\n\n\n\n\n\n\nbenchmark_all_cascade"
+  },
+  {
+    "objectID": "index.html#scaling-with-random-aminoacids-on-a-intel-xeon-gold-6230-cpu-with-96gb-ram",
+    "href": "index.html#scaling-with-random-aminoacids-on-a-intel-xeon-gold-6230-cpu-with-96gb-ram",
+    "title": "A parameterization plugin for GraPPA for KIMMDY",
+    "section": "",
+    "text": "benchmark_all_cascade"
+  }
+]
