@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/graeter-group/kimmdy-grappa/compare/v0.2.0...v0.3.0) (2024-09-06)
+
+
+### Features
+
+* add docs and update gh actions [#19](https://github.com/graeter-group/kimmdy-grappa/issues/19) ([cdae26f](https://github.com/graeter-group/kimmdy-grappa/commit/cdae26f160ed082176d551c86e0b18c5b8350714))
+
+
+### Bug Fixes
+
+* give kimmdy_grappa its own module ([4ab0a14](https://github.com/graeter-group/kimmdy-grappa/commit/4ab0a140d4f663e13b9c3d710b334b94ff572ec7))
+
 ## [0.2.0](https://github.com/hits-mbm-dev/kimmdy-grappa/compare/v0.1.5...v0.2.0) (2024-02-26)
 
 
