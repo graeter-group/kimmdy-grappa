@@ -4,7 +4,7 @@
     "href": "_reference/grappa_interface.html",
     "title": "grappa_interface",
     "section": "",
-    "text": "``\n\n\n\n\n\nName\nDescription\n\n\n\n\nGrappaInterface\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.\n\n\n\n\n\nGrappaInterface(self, *args, grappa_tag='latest', charge_model='amber99', **kwargs)\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.",
+    "text": "grappa_interface\n\n\n\n\n\nName\nDescription\n\n\n\n\nGrappaInterface\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.\n\n\n\n\n\ngrappa_interface.GrappaInterface(self, *args, grappa_tag='latest', charge_model='amber99', **kwargs)\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.",
     "crumbs": [
       "Reference",
       "KIMMDY GRAPPA",
@@ -16,7 +16,7 @@
     "href": "_reference/grappa_interface.html#classes",
     "title": "grappa_interface",
     "section": "",
-    "text": "Name\nDescription\n\n\n\n\nGrappaInterface\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.\n\n\n\n\n\nGrappaInterface(self, *args, grappa_tag='latest', charge_model='amber99', **kwargs)\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.",
+    "text": "Name\nDescription\n\n\n\n\nGrappaInterface\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.\n\n\n\n\n\ngrappa_interface.GrappaInterface(self, *args, grappa_tag='latest', charge_model='amber99', **kwargs)\nWrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.",
     "crumbs": [
       "Reference",
       "KIMMDY GRAPPA",

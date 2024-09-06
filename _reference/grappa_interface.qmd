@@ -1,6 +1,6 @@
-# grappa_interface { #grappa_interface }
+# grappa_interface { #kimmdy_grappa.grappa_interface }
 
-``
+`grappa_interface`
 
 
 
@@ -8,10 +8,10 @@
 
 | Name | Description |
 | --- | --- |
-| [GrappaInterface](#grappa_interface.GrappaInterface) | Wrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model. |
+| [GrappaInterface](#kimmdy_grappa.grappa_interface.GrappaInterface) | Wrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model. |
 
-### GrappaInterface { #grappa_interface.GrappaInterface }
+### GrappaInterface { #kimmdy_grappa.grappa_interface.GrappaInterface }
 
-`GrappaInterface(self, *args, grappa_tag='latest', charge_model='amber99', **kwargs)`
+`grappa_interface.GrappaInterface(self, *args, grappa_tag='latest', charge_model='amber99', **kwargs)`
 
 Wrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.
