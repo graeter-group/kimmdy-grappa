@@ -12,6 +12,14 @@
 
 ### GrappaInterface { #kimmdy_grappa.grappa_interface.GrappaInterface }
 
-`grappa_interface.GrappaInterface(self, *args, grappa_tag='latest', charge_model='amber99', **kwargs)`
+```python
+grappa_interface.GrappaInterface(
+    self,
+    *args,
+    grappa_tag='latest',
+    charge_model='amber99',
+    **kwargs,
+)
+```
 
 Wrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.

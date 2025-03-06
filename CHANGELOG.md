@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/graeter-group/kimmdy-grappa/compare/v0.3.1...v0.3.2) (2025-03-06)
+
+
+### Bug Fixes
+
+* trigger release to build docs on release PR ([9508586](https://github.com/graeter-group/kimmdy-grappa/commit/95085862ee7b21594699b3c5b12ce1c5447fa809))
+
 ## [0.3.1](https://github.com/graeter-group/kimmdy-grappa/compare/v0.3.0...v0.3.1) (2025-03-06)
 
 
