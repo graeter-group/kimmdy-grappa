@@ -16,12 +16,12 @@ requires-python = ">= 3.8"
 dependencies = [
     "kimmdy",
     "MDAnalysis",
-    "grappa-ff" # --index-url https://download.pytorch.org/whl/cpu
+    # "grappa-ff" # --index-url https://download.pytorch.org/whl/cpu
 ]
 
-[tool.uv.sources]
-torch = [{ index = "pytorch-cpu" }]
-torchvision = [{ index = "pytorch-cpu" }]
+# [tool.uv.sources]
+# torch = [{ index = "pytorch-cpu" }]
+# torchvision = [{ index = "pytorch-cpu" }]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"
