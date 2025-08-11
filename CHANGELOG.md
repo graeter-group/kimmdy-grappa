@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.0](https://github.com/graeter-group/kimmdy-grappa/compare/v0.3.2...v0.4.0) (2025-08-11)
+
+
+### Features
+
+* pyproject.toml ([5f931e0](https://github.com/graeter-group/kimmdy-grappa/commit/5f931e091dcdd9c9d5d6c456b500d24d95b966ed))
+
+
+### Bug Fixes
+
+* **ci:** release permisisons ([cfbe38d](https://github.com/graeter-group/kimmdy-grappa/commit/cfbe38dd20e660edb3fa5748c7a5a5a2f1ff9d93))
+* conflicting license information ([#25](https://github.com/graeter-group/kimmdy-grappa/issues/25)) ([8f275dd](https://github.com/graeter-group/kimmdy-grappa/commit/8f275ddc6ad62c4ba352c6f67144320c504c5b07))
+* don't directly depend on grappa-ff ([f95e19b](https://github.com/graeter-group/kimmdy-grappa/commit/f95e19ba5d7be4765b8c6a2a53f0012e7d28b85f))
+* pyproject file ([d8f3232](https://github.com/graeter-group/kimmdy-grappa/commit/d8f323237f5614f58dbc5868f3ff4d17e6a60985))
+
 ## [0.3.2](https://github.com/graeter-group/kimmdy-grappa/compare/v0.3.1...v0.3.2) (2025-03-06)
 
 
