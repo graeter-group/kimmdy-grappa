@@ -7,7 +7,6 @@ name = "kimmdy-grappa"
 version = "0.3.2"
 license = {text = "GPL-3.0"}
 description = "Parameterization interface between KIMMDY and GrAPPa"
-description-content-type = "text/markdown"
 authors = [{name = "Eric Hartmann", email = "eric.hartmann@h-its.org"}]
 classifiers = [
     "Programming Language :: Python :: 3",
