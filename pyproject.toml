@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kimmdy-grappa"
+version = "0.4.0"
+license = {text = "GPL-3.0"}
+description = "Parameterization interface between KIMMDY and GrAPPa"
+authors = [{name = "Eric Hartmann", email = "eric.hartmann@h-its.org"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+requires-python = ">= 3.8"
+dependencies = [
+    "kimmdy",
+    "MDAnalysis",
+    # "grappa-ff" # --index-url https://download.pytorch.org/whl/cpu
+]
+
+# [tool.uv.sources]
+# torch = [{ index = "pytorch-cpu" }]
+# torchvision = [{ index = "pytorch-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "tox",
+    "black",
+    "hypothesis",
+    "jupyter",
+    "griffe >= 0.33, < 1.0.0",
+    "quartodoc",
+]
+
+[project.entry-points."kimmdy.parameterization_plugins"]
+grappa = "kimmdy_grappa.grappa_interface:GrappaInterface"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
