@@ -13,7 +13,7 @@ from kimmdy.topology.atomic import MultipleDihedrals
 from kimmdy.parsing import read_top
 
 
-from grappa_interface import GrappaInterface
+from kimmdy_grappa.grappa_interface import GrappaInterface
 
 
 def test_parameterize_topology(tmp_path):
