@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1](https://github.com/graeter-group/kimmdy-grappa/compare/v0.4.0...v0.4.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* Change ff and improper periodicity assertion statement. fixes  [#27](https://github.com/graeter-group/kimmdy-grappa/issues/27) ([#30](https://github.com/graeter-group/kimmdy-grappa/issues/30)) ([eef81b0](https://github.com/graeter-group/kimmdy-grappa/commit/eef81b01612c57e9791799f4707f37a5e984ec66))
+* proper import of GrappaInterface ([#24](https://github.com/graeter-group/kimmdy-grappa/issues/24)) ([924bc21](https://github.com/graeter-group/kimmdy-grappa/commit/924bc212eac63d580cfc74db78ff5f244fad8274))
+
 ## [0.4.0](https://github.com/graeter-group/kimmdy-grappa/compare/v0.3.2...v0.4.0) (2025-08-11)
 
 
