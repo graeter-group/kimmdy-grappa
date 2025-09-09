@@ -18,7 +18,7 @@
 ;
 
 ; Include forcefield parameters
-#include "./amber99sb-star-ildnp.ff/forcefield.itp"
+#include "./amber99sb-ildn.ff/forcefield.itp"
 
 [ moleculetype ]
 ; Name nrexcl
@@ -203,7 +203,7 @@ Protein  3
 
 
 ; Include water topology
-#include "./amber99sb-star-ildnp.ff/tip3p.itp"
+#include "./amber99sb-ildn.ff/tip3p.itp"
 
 #ifdef   POSRES_WATER
 [ position_restraints ]
@@ -214,7 +214,7 @@ Protein  3
 
 
 ; Include topology for ions
-#include "./amber99sb-star-ildnp.ff/ions.itp"
+#include "./amber99sb-ildn.ff/ions.itp"
 
 [ system ]
 ; Name
