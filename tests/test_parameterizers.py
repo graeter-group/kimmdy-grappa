@@ -15,6 +15,32 @@ from kimmdy.parsing import read_top
 
 from kimmdy_grappa.grappa_interface import GrappaInterface
 
+from grappa.grappa import Grappa
+
+
+def get_dihedral_multiplicty(grappa_tag: str = "latest", improper: str = False) -> int:
+    """
+    Determine the number of periodicity terms for proper or improper dihedrals from a grappa model.
+
+    ----------
+    Parameters:
+    ----------
+    grappa_tag : str
+        The tag of the grappa model to use.
+    improper : bool
+        Whether to get the multiplicity for improper dihedrals.
+    -------
+    Returns:
+    -------
+    int
+        The number of periodicity terms for the specified dihedral type.
+    """
+    model = Grappa.from_tag(grappa_tag)
+    if improper:
+        return model.model.parameter_writer.improper_writer.n_periodicity
+    else:
+        return model.model.parameter_writer.proper_writer.n_periodicity
+
 
 def test_parameterize_topology(tmp_path):
     os.chdir(tmp_path.resolve())
@@ -48,7 +74,9 @@ def test_parameterize_topology(tmp_path):
     for multiple_dihedral in curr_top.proper_dihedrals.values():
         assert len(multiple_dihedral.dihedrals) in [3, 6]
 
-    assert len(curr_top.improper_dihedrals) == 15
+    assert len(curr_top.improper_dihedrals) == 15  # check if 15 impropers are present
     for multiple_dihedral in curr_top.improper_dihedrals.values():
         assert isinstance(multiple_dihedral, MultipleDihedrals)
-        assert len(multiple_dihedral.dihedrals) == 3
+        assert len(multiple_dihedral.dihedrals) == get_dihedral_multiplicty(
+            improper=True
+        )  # check the improper multiplicity
