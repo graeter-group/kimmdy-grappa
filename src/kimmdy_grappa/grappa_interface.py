@@ -5,14 +5,14 @@ from kimmdy.plugins import Parameterizer
 from kimmdy.topology.topology import Topology
 
 from grappa.grappa import Grappa
-from grappa.utils.kimmdy_utils import KimmdyGrappaParameterizer
+from grappa.utils.gromacs_utils import GrappaParameterizer
 
 logger = logging.getLogger("kimmdy.grappa_interface")
 
 
 class GrappaInterface(Parameterizer):
     """
-    Wrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.
+    Wrapper of the GrappaParameterizer used in grappa. Initialised with a tag instead of a model.
     """
 
     def __init__(
@@ -21,7 +21,7 @@ class GrappaInterface(Parameterizer):
         super().__init__(*args, **kwargs)
         logger.info(f"Instantiating Grappa with tag '{grappa_tag}'.")
         grappa_instance = Grappa.from_tag(grappa_tag)
-        self.kimmdy_grappa_parameterizer = KimmdyGrappaParameterizer(
+        self.kimmdy_grappa_parameterizer = GrappaParameterizer(
             grappa_instance=grappa_instance,
             charge_model=charge_model,
         )
