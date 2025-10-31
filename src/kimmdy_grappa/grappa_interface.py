@@ -4,8 +4,17 @@ from typing import Optional
 from kimmdy.plugins import Parameterizer
 from kimmdy.topology.topology import Topology
 
+import grappa
 from grappa.grappa import Grappa
-from grappa.utils.gromacs_utils import GrappaParameterizer
+
+# Conditional import based on grappa version to allow for backward compatibility
+if grappa.__version__ <= "1.4.1":
+    from grappa.utils.kimmdy_utils import (
+        KimmdyGrappaParameterizer as GrappaParameterizer,
+    )
+else:
+    from grappa.utils.gromacs_utils import GrappaParameterizer
+
 
 logger = logging.getLogger("kimmdy.grappa_interface")
 
