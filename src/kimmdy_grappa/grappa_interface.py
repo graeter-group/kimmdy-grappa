@@ -1,5 +1,6 @@
 import logging
 from typing import Optional
+from importlib.metadata import version
 
 from kimmdy.plugins import Parameterizer
 from kimmdy.topology.topology import Topology
@@ -7,13 +8,12 @@ from kimmdy.topology.topology import Topology
 import grappa
 from grappa.grappa import Grappa
 
-# Conditional import based on grappa version to allow for backward compatibility
-if grappa.__version__ <= "1.4.1":
-    from grappa.utils.kimmdy_utils import (
-        KimmdyGrappaParameterizer as GrappaParameterizer,
-    )
-else:
-    from grappa.utils.gromacs_utils import GrappaParameterizer
+try: 
+    from grappa.utils.gromacs_utils import GrappaParameterizer # grappa >= 1.5.0
+except ImportError as e:
+    if e.name != "grappa.utils.gromacs_utils":
+        raise
+    from grappa.utils.kimmdy_utils import KimmdyGrappaParameterizer as GrappaParameterizer # grappa < 1.5.0
 
 
 logger = logging.getLogger("kimmdy.grappa_interface")
