@@ -8,12 +8,14 @@ from kimmdy.topology.topology import Topology
 import grappa
 from grappa.grappa import Grappa
 
-try: 
-    from grappa.utils.gromacs_utils import GrappaParameterizer # grappa >= 1.5.0
+try:
+    from grappa.utils.gromacs_utils import GrappaParameterizer  # grappa >= 1.5.0
 except ImportError as e:
     if e.name != "grappa.utils.gromacs_utils":
         raise
-    from grappa.utils.kimmdy_utils import KimmdyGrappaParameterizer as GrappaParameterizer # grappa < 1.5.0
+    from grappa.utils.kimmdy_utils import (
+        KimmdyGrappaParameterizer as GrappaParameterizer,
+    )  # grappa < 1.5.0
 
 
 logger = logging.getLogger("kimmdy.grappa_interface")
