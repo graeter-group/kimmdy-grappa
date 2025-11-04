@@ -1,18 +1,29 @@
 import logging
 from typing import Optional
+from importlib.metadata import version
 
 from kimmdy.plugins import Parameterizer
 from kimmdy.topology.topology import Topology
 
+import grappa
 from grappa.grappa import Grappa
-from grappa.utils.kimmdy_utils import KimmdyGrappaParameterizer
+
+try:
+    from grappa.utils.gromacs_utils import GrappaParameterizer  # grappa >= 1.5.0
+except ImportError as e:
+    if e.name != "grappa.utils.gromacs_utils":
+        raise
+    from grappa.utils.kimmdy_utils import (
+        KimmdyGrappaParameterizer as GrappaParameterizer,
+    )  # grappa < 1.5.0
+
 
 logger = logging.getLogger("kimmdy.grappa_interface")
 
 
 class GrappaInterface(Parameterizer):
     """
-    Wrapper of the KimmdyGrappaParameterizer used in grappa. Initialised with a tag instead of a model.
+    Wrapper of the GrappaParameterizer used in grappa. Initialised with a tag instead of a model.
     """
 
     def __init__(
@@ -21,7 +32,7 @@ class GrappaInterface(Parameterizer):
         super().__init__(*args, **kwargs)
         logger.info(f"Instantiating Grappa with tag '{grappa_tag}'.")
         grappa_instance = Grappa.from_tag(grappa_tag)
-        self.kimmdy_grappa_parameterizer = KimmdyGrappaParameterizer(
+        self.kimmdy_grappa_parameterizer = GrappaParameterizer(
             grappa_instance=grappa_instance,
             charge_model=charge_model,
         )
